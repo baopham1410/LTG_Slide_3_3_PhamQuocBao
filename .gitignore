@@ -45,3 +45,9 @@ sysinfo.txt
 crashlytics-build.properties
 ~$*.docx
 *.tmp
+
+# File huong dan (local only)
+HUONG_DAN*.txt
+GIAI_THICH*.txt
+NOP_BAI*.md
+
