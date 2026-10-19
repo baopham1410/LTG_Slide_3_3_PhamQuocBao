@@ -1,0 +1,47 @@
+# Các thư mục hệ thống tự sinh ra (Nặng và không cần thiết)
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# File rác do các trình soạn thảo code (Visual Studio, Rider) tạo ra
+.vs/
+.gradle/
+ExportedObj/
+.consulo/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# File meta rác
+*.pidb.meta
+*.pdb.meta
+*.mdb.meta
+
+# Bỏ qua các file đã build thành phẩm (để tránh nặng Git)
+*.apk
+*.aab
+*.unitypackage
+*.app
+
+# Báo cáo lỗi
+sysinfo.txt
+crashlytics-build.properties
+~$*.docx
+*.tmp

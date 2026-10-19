@@ -1,0 +1,117 @@
+============================================================
+  LTG Tuần 2 — Bài 1.3 + 1.4 (có thể làm CHUNG 1 scene)
+  Project: D:\LTG\LTG_Tuan2_Bai13_Bai14
+============================================================
+
+Cô cho phép kết hợp: trong CÙNG một scene vừa gắn Component/Camera
+(Bài 1.3) vừa vẽ bản đồ bằng Tilemap (Bài 1.4).
+
+Scene nên dùng: Assets/Scenes/Bai_1_3_Component_Camera.unity
+(hoặc SampleScene đang làm cũng được — Free Play rồi Save As).
+
+
+------------------------------------------------------------
+THỨ TỰ LÀM GỢI Ý (1 scene chung)
+------------------------------------------------------------
+
+Bước A — Tilemap trước (Bài 1.4)
+  → Có mặt đất để nhân vật đứng
+
+Bước B — Nhân vật + Component (Bài 1.3)
+  → Gắn ảnh, vật lý, va chạm, script chạy/nhảy
+
+Bước C — Cinemachine (Bài 1.3)
+  → Camera theo nhân vật khi chạy trên map vừa vẽ
+
+
+============================================================
+BƯỚC A — TILEMAP & TILE PALETTE (Bài 1.4)
+============================================================
+
+1) Cắt ảnh địa hình thành ô gạch
+   - Project: Assets/Art/TileSheets/SPA_Rock_Grass_Water.png
+   - Inspector: Sprite Mode = Multiple → Apply
+   - Sprite Editor → Slice → Grid By Cell Size (thử 16x16 hoặc 32x32)
+   - Slice → Apply → Apply trên Inspector
+
+2) Tạo Tile Palette
+   - Window > 2D > Tile Palette
+   - Create New Palette (đặt tên vd: Platforms)
+   - Kéo các sprite đã cắt vào Palette (Unity tạo Tile)
+
+3) Tạo Grid + Tilemap trong scene
+   - Hierarchy: Create > 2D Object > Tilemap > Rectangular
+   - Trong Tile Palette: chọn Brush, chọn ô gạch, vẽ mặt đất / sàn / tường
+
+4) Để nhân vật đứng được trên gạch
+   - Chọn Tilemap trong Hierarchy
+   - Add Component > Tilemap Collider 2D
+   - (Tuỳ chọn) Layer = Ground
+
+
+============================================================
+BƯỚC B — COMPONENT CHO NHÂN VẬT (Bài 1.3)
+============================================================
+
+1) Đưa nhân vật vào scene
+   - Cách nhanh: kéo Assets/Art/Wizard/Sprites/Skeletal vào Hierarchy
+     (như bạn đã làm — ổn)
+   - Hoặc kéo Wizard.prefab
+   - Đổi tên → Player
+
+2) Gắn Component (chọn Player → Inspector → Add Component)
+   - Sprite Renderer     : đã có nếu kéo sprite vào scene
+   - Rigidbody 2D        : Gravity Scale = 1, Freeze Rotation Z
+   - Capsule Collider 2D : chỉnh size khớp người
+   - SimplePlayerMove    : Assets/Scripts
+   - Player Input        : Actions = InputSystem_Actions
+                           Behavior = Send Messages
+
+3) Đặt Player đứng trên phần tile đã vẽ (kéo Transform Y lên trên mặt đất)
+
+
+============================================================
+BƯỚC C — CINEMACHINE THEO NHÂN VẬT (Bài 1.3)
+============================================================
+
+1) GameObject > Cinemachine > Cinemachine Camera
+   (hoặc kéo prefab Assets/Slide_1_3_Assets/Prefabs/Cameras)
+
+2) Trên Cinemachine Camera:
+   - Tracking Target = Player
+
+3) Main Camera cần có Cinemachine Brain
+   (thường Unity tự thêm)
+
+4) Play (Ctrl+P)
+   - A/D hoặc mũi tên chạy, Space nhảy
+   - Camera đi theo Player trên map tile vừa vẽ
+
+
+============================================================
+CHECKLIST NỘP BÀI (1 scene đủ cả 1.3 + 1.4)
+============================================================
+
+[ ] Có Tilemap / Tile Palette, đã vẽ mặt đất (hoặc sàn/tường)
+[ ] Player có Sprite Renderer + Rigidbody2D + Collider2D
+[ ] Player chạy / nhảy được
+[ ] Cinemachine camera theo Player
+[ ] Play thử không rơi xuyên map
+
+
+============================================================
+THƯ MỤC HỮU ÍCH
+============================================================
+
+Assets/Art/Wizard/              Nhân vật
+Assets/Art/TileSheets/          Ảnh cắt tile
+Assets/Scripts/SimplePlayerMove Script chạy/nhảy
+Assets/Slide_1_3_Assets/        Prefab Cameras (tham khảo)
+Assets/_ThamKhao/               Mẫu Ginger / Tilemap (xem khi cần)
+
+
+Lưu ý nhanh:
+- Nhìn tab SCENE khi chỉnh; tab GAME khi Play.
+- Màn xanh = chưa có gì trong tầm camera → kiểm tra Player/Tilemap.
+- Chỉ mở 1 Unity project để tránh crash (máy ~15GB RAM).
+)

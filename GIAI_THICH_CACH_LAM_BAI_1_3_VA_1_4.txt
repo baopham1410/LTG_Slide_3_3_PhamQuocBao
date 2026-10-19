@@ -1,0 +1,458 @@
+================================================================================
+  GIẢI THÍCH CHI TIẾT CÁCH LÀM BÀI
+  LTG Tuần 2 — Bài 1.3 (Component & Camera) + Bài 1.4 (Tilemap & Tile Palette)
+  Project: D:\LTG\LTG_Tuan2_Bai13_Bai14
+  Scene đã làm: Assets/Scenes/SampleScene.unity
+================================================================================
+
+Mục đích file này: đọc để hiểu và trả lời khi cô hỏi "em làm thế nào?".
+
+
+--------------------------------------------------------------------------------
+PHẦN 0 — BÀI NÀY LÀM GÌ? (TÓM TẮT 30 GIÂY)
+--------------------------------------------------------------------------------
+
+Bài yêu cầu kết hợp 2 phần trong một scene:
+
+1) Bài 1.3 — Component & Camera
+   - Gắn các thành phần (Component) lên nhân vật:
+     + Hiện hình (Sprite Renderer)
+     + Chịu trọng lực / vật lý (Rigidbody 2D)
+     + Va chạm (Collider 2D)
+     + Điều khiển (Script + Player Input)
+   - Dùng Cinemachine để camera tự theo nhân vật khi chạy.
+
+2) Bài 1.4 — Tilemap & Tile Palette
+   - Cắt ảnh địa hình thành ô gạch (Tile).
+   - Dùng cọ (Tile Palette) vẽ mặt đất / sàn / tường trên scene.
+   - Thêm Tilemap Collider để nhân vật đứng được trên đất.
+
+
+--------------------------------------------------------------------------------
+PHẦN 1 — BÀI 1.4: TILEMAP & TILE PALETTE (LÀM TRƯỚC CHO CÓ ĐẤT)
+--------------------------------------------------------------------------------
+
+### 1.1. Vì sao cần Tilemap?
+Nếu kéo từng sprite đất một rất chậm. Tilemap cho phép:
+- Cắt 1 ảnh lớn thành nhiều ô nhỏ (tile)
+- Vẽ nhanh bằng cọ để tạo bản đồ
+
+### 1.2. Ảnh dùng để cắt
+Thư mục: Assets/Art/TileSheets/
+File: SPA_Rock_Grass_Water.png
+
+Trong project này ảnh ĐÃ được cắt sẵn (Sprite Mode = Multiple),
+nên không cần cắt lại. Nếu cô hỏi cách cắt thì trả lời như sau:
+
+CÁCH CẮT (Sprite Editor):
+1. Chọn ảnh trong Project
+2. Inspector → Sprite Mode = Multiple → Apply
+3. Bấm Sprite Editor → Slice
+4. Type: Grid By Cell Size (ví dụ 16x16 hoặc 32x32)
+5. Slice → Apply → Apply trên Inspector
+→ 1 ảnh lớn tách thành nhiều sprite ô gạch.
+
+### 1.3. Tile Palette là gì?
+Tile Palette = bảng màu / bảng gạch để chọn ô rồi quét cọ lên scene.
+
+Cách tạo:
+1. Window → 2D → Tile Palette
+2. Create New Palette (ví dụ tên Platforms / PlatformsPalette)
+3. Kéo các sprite đã cắt vào Palette → Unity tạo Tile asset
+
+### 1.4. Tạo chỗ để vẽ trong Scene
+Hierarchy → chuột phải → 2D Object → Tilemap → Rectangular
+→ Xuất hiện:
+  - Grid     : hệ lưới các ô
+  - Tilemap  : lớp chứa các viên gạch
+
+### 1.5. Vẽ bản đồ
+1. Mở Tile Palette, chọn ô gạch
+2. Chọn tool Brush (cây cọ)
+3. Ở tab Scene, kéo chuột vẽ hàng đất / tường
+4. Có thể vẽ nhiều lớp (mặt cỏ trên, đá dưới) cho đẹp
+
+### 1.6. Để nhân vật đứng được trên gạch
+Chọn Tilemap → Add Component → Tilemap Collider 2D
+- Is Trigger phải TẮT
+→ Collider tạo vùng cứng theo hình các viên gạch đã vẽ.
+Khi Player có Rigidbody + Collider, sẽ va chạm và đứng trên đất.
+
+
+--------------------------------------------------------------------------------
+PHẦN 2 — BÀI 1.3: COMPONENT TRÊN NHÂN VẬT
+--------------------------------------------------------------------------------
+
+### 2.1. Component là gì? (câu trả lời cho cô)
+Component = thành phần gắn lên GameObject để object có chức năng.
+Một nhân vật thường cần nhiều component kết hợp:
+- Hiện hình
+- Vật lý
+- Va chạm
+- Script điều khiển
+
+### 2.2. Đưa nhân vật vào Scene
+Cách đã làm:
+- Kéo sprite/prefab nhân vật (Skeletal / Wizard) từ
+  Assets/Art/Wizard vào Hierarchy hoặc Scene
+- Đổi tên thành Player
+
+Unity tự tạo GameObject có Sprite Renderer và gắn sẵn hình.
+
+### 2.3. Các Component đã gắn trên Player — GIẢI THÍCH TỪNG CÁI
+
+(1) Sprite Renderer
+    - Nhiệm vụ: HIỂN THỊ ảnh 2D của nhân vật.
+    - Không có → Play chỉ thấy nền, không thấy người.
+
+(2) Rigidbody 2D
+    - Nhiệm vụ: mô phỏng VẬT LÝ 2D (trọng lực, vận tốc).
+    - Gravity Scale = 1 → bị hút xuống dưới.
+    - Freeze Rotation Z → khi va chạm không bị lật nghiêng.
+    - Body Type = Dynamic → có thể di chuyển / rơi.
+
+(3) Capsule Collider 2D (hoặc Box Collider 2D)
+    - Nhiệm vụ: tạo VÙNG VA CHẠM quanh nhân vật.
+    - Is Trigger = TẮT → va chạm thật (đứng trên đất được).
+    - Nếu Is Trigger = BẬT → chỉ báo va chạm, không chặn rơi.
+
+(4) SimplePlayerMove (Script)
+    - File: Assets/Scripts/SimplePlayerMove.cs
+    - Nhiệm vụ: nhận input rồi đổi vận tốc Rigidbody để chạy/nhảy.
+    - Lưu ý khi cô hỏi nguồn code:
+      + Script này được tạo sẵn trong project luyện tập để làm bài nhanh.
+      + Trong zip Slide còn có script tham khảo phức tạp hơn
+        (EnemyMovement, PlayerMovement) trong Slide_1_3_Assets / Slide_1_4_Assets.
+
+(5) Player Input
+    - Thuộc Input System của Unity.
+    - Actions = InputSystem_Actions
+    - Behavior = Send Messages
+    - Khi nhấn phím, Unity gọi hàm trong script:
+        OnMove  → chạy trái/phải
+        OnJump  → nhảy
+    - Default Action Map = Player
+
+
+--------------------------------------------------------------------------------
+PHẦN 3 — BÀI 1.3: CINEMACHINE CAMERA THEO NHÂN VẬT
+--------------------------------------------------------------------------------
+
+### 3.1. Vì sao cần Cinemachine?
+Main Camera mặc định đứng yên.
+Muốn camera đi theo Player khi Player chạy → dùng Cinemachine.
+
+### 3.2. Các object liên quan
+
+(1) Main Camera
+    - Camera thật để render ra Game view.
+    - Có component Cinemachine Brain
+      → "não" nhận lệnh từ Cinemachine Camera.
+    - Position Z = -10
+      (nhân vật ở Z = 0; camera phải lùi ra sau mới nhìn thấy.
+       Nếu Z camera = 0 sẽ bị màn xanh).
+
+(2) CinemachineCamera
+    - Camera ảo: quy định theo ai, offset bao nhiêu.
+    - Tracking Target = Player  → theo nhân vật.
+    - Cinemachine Follow với Follow Offset Z = -10
+      → luôn giữ khoảng cách nhìn từ phía trước.
+
+### 3.3. Luồng hoạt động (trả lời rất hay nếu cô hỏi)
+Player di chuyển
+  → CinemachineCamera cập nhật vị trí theo Player
+  → Cinemachine Brain trên Main Camera áp dụng vị trí đó
+  → Game view luôn nhìn thấy Player
+
+
+--------------------------------------------------------------------------------
+PHẦN 4 — LUỒNG HOẠT ĐỘNG KHI BẤM PLAY (RẤT QUAN TRỌNG)
+--------------------------------------------------------------------------------
+
+1. Nhấn phím A/D hoặc mũi tên
+2. Player Input nhận action Move
+3. Gọi SimplePlayerMove.OnMove → lưu hướng
+4. FixedUpdate đặt rb.linearVelocity.x = hướng * tốc độ
+5. Rigidbody đẩy Player sang ngang
+6. Gravity kéo Player xuống
+7. Capsule Collider chạm Tilemap Collider → dừng rơi (đứng trên đất)
+8. Cinemachine theo Player → camera không bị mất nhân vật
+
+
+--------------------------------------------------------------------------------
+PHẦN 5 — CÁC LỖI ĐÃ GẶP VÀ CÁCH HIỂU (CÔ HAY HỎI)
+--------------------------------------------------------------------------------
+
+1) Màn Game màu xanh
+   Nguyên nhân: camera không nhìn thấy object (thường Z camera = 0).
+   Cách hiểu: object 2D ở Z=0, camera cần Z=-10 để nhìn vào.
+
+2) Nhân vật rơi xuyên đất
+   Nguyên nhân thường gặp:
+   - Tilemap chưa có Tilemap Collider 2D
+   - Collider bị Is Trigger
+   - Collider Player quá nhỏ / đặt sai vị trí
+   Cách hiểu: phải có 2 collider (Player + đất) và không để Trigger
+   thì mới chặn được.
+
+3) Kéo Skeletal.psb vào ô Sprite không được
+   Vì .psb là file xương/animation, không phải sprite đơn giản.
+   Cách đúng: kéo vào Hierarchy/Scene, hoặc dùng Wizard.prefab,
+   hoặc dùng Square.png nếu chỉ cần thử Sprite Renderer.
+
+4) Tile Palette báo "create a new Tilemap"
+   Palette chỉ là bảng gạch; phải tạo Grid/Tilemap trong scene mới vẽ được.
+
+
+--------------------------------------------------------------------------------
+PHẦN 6 — CHECKLIST HOÀN THÀNH BÀI
+--------------------------------------------------------------------------------
+
+[x] Có Grid + Tilemap, đã vẽ mặt đất bằng Tile Palette
+[x] Tilemap có Tilemap Collider 2D
+[x] Player có Sprite Renderer + Rigidbody2D + Collider2D
+[x] Player có script điều khiển + Player Input
+[x] Có CinemachineCamera Tracking Target = Player
+[x] Main Camera có Cinemachine Brain, Z = -10
+[x] Play: thấy nhân vật + map, chạy/nhảy được, camera theo người
+
+
+--------------------------------------------------------------------------------
+PHẦN 7 — CÂU HỎI CÔ HAY HỎI + GỢI Ý TRẢ LỜI NGẮN
+--------------------------------------------------------------------------------
+
+H: Component là gì?
+Đ: Thành phần gắn lên GameObject để object có chức năng
+   (hiện hình, vật lý, va chạm, điều khiển...).
+
+H: Rigidbody2D khác Collider2D chỗ nào?
+Đ: Rigidbody = chịu lực/trọng lực/vận tốc.
+   Collider = hình dạng để va chạm.
+   Muốn đứng trên đất cần cả hai + đất cũng có collider.
+
+H: Tilemap dùng để làm gì?
+Đ: Vẽ bản đồ bằng các ô gạch cắt từ ảnh, nhanh hơn đặt từng sprite.
+
+H: Cinemachine làm gì?
+Đ: Khiến camera theo nhân vật tự động, không phải viết code kéo camera.
+
+H: Vì sao camera để Z = -10?
+Đ: Trong game 2D object thường ở Z=0; camera lùi về Z=-10 mới nhìn thấy.
+   Để Z=0 dễ bị màn xanh.
+
+H: Em điều khiển nhân vật bằng cách nào?
+Đ: Dùng Input System (Player Input) gửi tín hiệu Move/Jump
+   vào script SimplePlayerMove, script đổi vận tốc Rigidbody2D.
+
+
+--------------------------------------------------------------------------------
+PHẦN 8 — CẤU TRÚC THƯ MỤC LIÊN QUAN
+--------------------------------------------------------------------------------
+
+Assets/Scenes/SampleScene.unity     Scene đã làm bài (1.3 + 1.4 chung)
+Assets/Scripts/SimplePlayerMove.cs  Script chạy/nhảy đang dùng
+Assets/Art/Wizard/                  Nhân vật
+Assets/Art/TileSheets/              Ảnh cắt tile
+Assets/Slide_1_3_Assets/            Asset zip Slide 1.3 (tham khảo)
+Assets/Slide_1_4_Assets/            Asset zip Slide 1.4 (tham khảo)
+Assets/_ThamKhao/                   Prefab mẫu (Ginger, Tilemap...)
+
+File hướng dẫn thao tác từng bước: HUONG_DAN_BAI_1_3_VA_1_4.txt
+File giải thích để trả lời cô:     GIAI_THICH_CACH_LAM_BAI_1_3_VA_1_4.txt  (file này)
+
+
+--------------------------------------------------------------------------------
+PHẦN 9 — CÁCH GẮN CODE (SCRIPT) LÊN NHÂN VẬT
+--------------------------------------------------------------------------------
+
+Script chỉ là file .cs trong Project. Muốn chạy được phải GẮN lên GameObject.
+
+### 9.1. Gắn SimplePlayerMove lên Player (trong Unity)
+
+Cách 1 — Add Component:
+1. Hierarchy → chọn Player
+2. Inspector → nút Add Component
+3. Gõ tìm: SimplePlayerMove
+4. Click chọn → script xuất hiện trên Inspector
+
+Cách 2 — Kéo thả:
+1. Project → Assets/Scripts → thấy file SimplePlayerMove
+2. Kéo file đó thả lên object Player trong Hierarchy
+   (hoặc thả vào Inspector của Player)
+
+### 9.2. Gắn Player Input (để bắt phím)
+
+1. Chọn Player → Add Component → Player Input
+2. Ô Actions: kéo file
+   Assets/Settings/InputSystem_Actions.inputactions
+3. Behavior = Send Messages
+   → Unity sẽ gọi đúng tên hàm OnMove / OnJump trong script
+4. Default Map = Player
+
+### 9.3. Thứ tự component khuyến nghị trên Player
+
+1. Transform              (có sẵn)
+2. Sprite Renderer        (hiện hình)
+3. Rigidbody 2D           (vật lý)     ← script RequireComponent cần cái này
+4. Capsule Collider 2D    (va chạm)
+5. SimplePlayerMove       (logic chạy/nhảy)
+6. Player Input           (nhận phím → gọi OnMove/OnJump)
+
+Thiếu Rigidbody mà gắn SimplePlayerMove:
+→ Unity tự thêm Rigidbody vì có dòng [RequireComponent(typeof(Rigidbody2D))]
+
+
+--------------------------------------------------------------------------------
+PHẦN 10 — GIẢI THÍCH TỪNG DÒNG CODE (SimplePlayerMove.cs)
+--------------------------------------------------------------------------------
+
+File: Assets/Scripts/SimplePlayerMove.cs
+
+---------- KHAI BÁO ----------
+
+using UnityEngine;
+using UnityEngine.InputSystem;
+  → Dùng thư viện Unity + Input System (đọc phím/gamepad).
+
+[RequireComponent(typeof(Rigidbody2D))]
+  → Object này BẮT BUỘC có Rigidbody2D.
+    Gắn script mà chưa có Rigidbody thì Unity tự thêm.
+
+public class SimplePlayerMove : MonoBehaviour
+  → Tên class = tên script. Kế thừa MonoBehaviour để gắn lên object
+    và dùng được Awake / FixedUpdate / OnMove...
+
+[SerializeField] float moveSpeed = 5f;
+[SerializeField] float jumpForce = 8f;
+  → Biến tốc độ chạy / lực nhảy.
+    SerializeField = hiện trên Inspector để chỉnh số mà không sửa code.
+    Mặc định: chạy 5, nhảy 8.
+
+Rigidbody2D rb;
+  → Giữ tham chiếu tới Rigidbody2D trên cùng object.
+
+Vector2 moveInput;
+  → Lưu hướng đang nhấn (x = trái/phải, y = lên/xuống).
+
+bool jumpPressed;
+  → Cờ: vừa bấm nhảy hay chưa.
+
+
+---------- LẤY RIGIDBODY KHI BẮT ĐẦU ----------
+
+void Awake()
+{
+    rb = GetComponent<Rigidbody2D>();
+}
+  → Awake chạy 1 lần khi object khởi tạo.
+  → GetComponent tìm Rigidbody2D gắn cùng Player, gán vào biến rb
+    để sau này đổi vận tốc.
+
+
+---------- NHẬN PHÍM TỪ PLAYER INPUT ----------
+
+void OnMove(InputValue value)
+{
+    moveInput = value.Get<Vector2>();
+}
+  → Tên hàm OnMove phải khớp action "Move" trong Input Actions.
+  → Player Input (Send Messages) tự gọi hàm này khi nhấn A/D hoặc mũi tên.
+  → value.Get<Vector2>() lấy vector hướng, ví dụ:
+      Right = (1, 0)
+      Left  = (-1, 0)
+      Thả phím = (0, 0)
+
+void OnJump(InputValue value)
+{
+    if (value.isPressed)
+        jumpPressed = true;
+}
+  → Action "Jump" (Space) được nhấn → bật cờ jumpPressed.
+  → Không nhảy ngay trong OnJump mà để FixedUpdate xử lý
+    (đúng nhịp vật lý).
+
+
+---------- MỖI FRAME VẬT LÝ: CHẠY + NHẢY + QUAY MẶT ----------
+
+void FixedUpdate()
+{
+    // 1) Chạy ngang, GIỮ nguyên vận tốc dọc (để trọng lực vẫn kéo xuống)
+    rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
+
+    // 2) Nếu vừa bấm nhảy → đẩy lên trên
+    if (jumpPressed)
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        jumpPressed = false;   // reset cờ, tránh nhảy liên tục mỗi frame
+    }
+
+    // 3) Đang chạy trái/phải → lật mặt nhân vật
+    if (Mathf.Abs(moveInput.x) > 0.01f)
+        transform.localScale = new Vector3(Mathf.Sign(moveInput.x), 1f, 1f);
+}
+
+Giải thích chi tiết:
+
+rb.linearVelocity = new Vector2(moveInput.x * moveSpeed, rb.linearVelocity.y);
+  - linearVelocity = vận tốc Rigidbody (Unity 6 dùng tên này; bản cũ hay gọi velocity).
+  - Trục X = hướng * tốc độ → chạy trái/phải.
+  - Trục Y giữ nguyên (rb.linearVelocity.y) → không hủy trọng lực / độ cao nhảy.
+
+jumpForce đẩy Y lên:
+  - Đặt vận tốc Y = 8 → nhân vật bật lên.
+  - GravityScale của Rigidbody sẽ kéo xuống dần → tạo quỹ đạo nhảy.
+
+transform.localScale = new Vector3(Mathf.Sign(moveInput.x), 1f, 1f);
+  - Sign(x) = 1 nếu chạy phải, -1 nếu chạy trái.
+  - Đổi scale.x âm/dương để sprite quay mặt đúng hướng.
+
+
+--------------------------------------------------------------------------------
+PHẦN 11 — SƠ ĐỒ NGẮN (THUỘC ĐỂ TRẢ LỜI CÔ)
+--------------------------------------------------------------------------------
+
+[Phím A/D, Space]
+        |
+        v
+[Player Input]  --Send Messages-->  OnMove / OnJump
+        |
+        v
+[SimplePlayerMove]  đổi  rb.linearVelocity
+        |
+        v
+[Rigidbody 2D]  di chuyển Player trong thế giới
+        |
+        +--> chạm [Tilemap Collider 2D] = đứng trên đất
+        +--> [Cinemachine] theo Transform của Player = camera đi theo
+
+
+--------------------------------------------------------------------------------
+PHẦN 12 — CÂU HỎI VỀ CODE + CÁCH TRẢ LỜI
+--------------------------------------------------------------------------------
+
+H: Script gắn thế nào?
+Đ: Chọn Player → Add Component → SimplePlayerMove
+   (hoặc kéo file .cs từ Project thả lên Player).
+
+H: OnMove lấy từ đâu?
+Đ: Từ Input System. Player Input Behavior = Send Messages
+   sẽ gọi hàm trùng tên action (Move → OnMove, Jump → OnJump).
+
+H: Vì sao dùng FixedUpdate không dùng Update?
+Đ: FixedUpdate chạy theo nhịp vật lý, phù hợp chỉnh Rigidbody.
+   Update chạy theo frame hình ảnh, dễ lệch khi chỉnh vận tốc vật lý.
+
+H: moveSpeed chỉnh ở đâu?
+Đ: Trên Inspector của Player, component SimplePlayerMove,
+   ô Move Speed / Jump Force (nhờ [SerializeField]).
+
+H: Không có Player Input thì sao?
+Đ: OnMove/OnJump không được gọi → nhân vật đứng yên
+   (vẫn bị trọng lực kéo xuống nếu có Rigidbody).
+
+
+================================================================================
+Hết. Đọc thêm Phần 9, 10, 11 khi cô hỏi về CODE và cách GẮN script.
+================================================================================
+)
+)
